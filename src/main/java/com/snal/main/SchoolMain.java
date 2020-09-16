@@ -17,8 +17,12 @@ public class SchoolMain {
          * 初始化地区
          */
         initAreaCode();
-
         String dataFile = "D:\\lcwork\\codes\\tools\\school-tool\\ModelHelper\\民办学校录取分数线.xlsx";
+        importPrivateEntryScore(dataFile);
+
+    }
+
+    private static void importPrivateEntryScore(String dataFile){
         BigExcelUtil bigExlUtil = new BigExcelUtil();
         int[] minColumns = {13};//13 列
         Map<String, List<List<String>>> metadata = bigExlUtil.readExcelData(dataFile, 0, 0, minColumns);
@@ -28,7 +32,6 @@ public class SchoolMain {
         tSchoolEntryScoreList.stream().forEach(p->{
             makeInsertSql(p);
         });
-
     }
 
     private static void initAreaCode() {
