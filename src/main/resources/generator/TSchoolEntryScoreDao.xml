@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snal.dao.TSchoolEntryScoreDao">
+  <resultMap id="BaseResultMap" type="com.snal.beans.TSchoolEntryScore">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="enroll_year" jdbcType="INTEGER" property="enrollYear" />
+    <result column="enroll_number" jdbcType="INTEGER" property="enrollNumber" />
+    <result column="student_type" jdbcType="INTEGER" property="studentType" />
+    <result column="min_score" jdbcType="INTEGER" property="minScore" />
+    <result column="score_enrolled" jdbcType="INTEGER" property="scoreEnrolled" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="batch_no" jdbcType="TINYINT" property="batchNo" />
+    <result column="min_score_seq" jdbcType="INTEGER" property="minScoreSeq" />
+    <result column="last_student_score" jdbcType="INTEGER" property="lastStudentScore" />
+    <result column="last_student_seq" jdbcType="INTEGER" property="lastStudentSeq" />
+    <result column="last_student_same_seq" jdbcType="INTEGER" property="lastStudentSameSeq" />
+    <result column="max_entry_seq" jdbcType="INTEGER" property="maxEntrySeq" />
+    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, school_id, enroll_year, enroll_number, student_type, min_score, score_enrolled, 
+    create_time, batch_no, min_score_seq, last_student_score, last_student_seq, last_student_same_seq, 
+    max_entry_seq, area_code
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_school_entry_score
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_school_entry_score
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.snal.beans.TSchoolEntryScore" useGeneratedKeys="true">
+    insert into t_school_entry_score (school_id, enroll_year, enroll_number, 
+      student_type, min_score, score_enrolled, 
+      create_time, batch_no, min_score_seq, 
+      last_student_score, last_student_seq, last_student_same_seq, 
+      max_entry_seq, area_code)
+    values (#{schoolId,jdbcType=INTEGER}, #{enrollYear,jdbcType=INTEGER}, #{enrollNumber,jdbcType=INTEGER}, 
+      #{studentType,jdbcType=INTEGER}, #{minScore,jdbcType=INTEGER}, #{scoreEnrolled,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{batchNo,jdbcType=TINYINT}, #{minScoreSeq,jdbcType=INTEGER}, 
+      #{lastStudentScore,jdbcType=INTEGER}, #{lastStudentSeq,jdbcType=INTEGER}, #{lastStudentSameSeq,jdbcType=INTEGER}, 
+      #{maxEntrySeq,jdbcType=INTEGER}, #{areaCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.snal.beans.TSchoolEntryScore" useGeneratedKeys="true">
+    insert into t_school_entry_score
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="schoolId != null">
+        school_id,
+      </if>
+      <if test="enrollYear != null">
+        enroll_year,
+      </if>
+      <if test="enrollNumber != null">
+        enroll_number,
+      </if>
+      <if test="studentType != null">
+        student_type,
+      </if>
+      <if test="minScore != null">
+        min_score,
+      </if>
+      <if test="scoreEnrolled != null">
+        score_enrolled,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="batchNo != null">
+        batch_no,
+      </if>
+      <if test="minScoreSeq != null">
+        min_score_seq,
+      </if>
+      <if test="lastStudentScore != null">
+        last_student_score,
+      </if>
+      <if test="lastStudentSeq != null">
+        last_student_seq,
+      </if>
+      <if test="lastStudentSameSeq != null">
+        last_student_same_seq,
+      </if>
+      <if test="maxEntrySeq != null">
+        max_entry_seq,
+      </if>
+      <if test="areaCode != null">
+        area_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="schoolId != null">
+        #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="enrollYear != null">
+        #{enrollYear,jdbcType=INTEGER},
+      </if>
+      <if test="enrollNumber != null">
+        #{enrollNumber,jdbcType=INTEGER},
+      </if>
+      <if test="studentType != null">
+        #{studentType,jdbcType=INTEGER},
+      </if>
+      <if test="minScore != null">
+        #{minScore,jdbcType=INTEGER},
+      </if>
+      <if test="scoreEnrolled != null">
+        #{scoreEnrolled,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="batchNo != null">
+        #{batchNo,jdbcType=TINYINT},
+      </if>
+      <if test="minScoreSeq != null">
+        #{minScoreSeq,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentScore != null">
+        #{lastStudentScore,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentSeq != null">
+        #{lastStudentSeq,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentSameSeq != null">
+        #{lastStudentSameSeq,jdbcType=INTEGER},
+      </if>
+      <if test="maxEntrySeq != null">
+        #{maxEntrySeq,jdbcType=INTEGER},
+      </if>
+      <if test="areaCode != null">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.snal.beans.TSchoolEntryScore">
+    update t_school_entry_score
+    <set>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="enrollYear != null">
+        enroll_year = #{enrollYear,jdbcType=INTEGER},
+      </if>
+      <if test="enrollNumber != null">
+        enroll_number = #{enrollNumber,jdbcType=INTEGER},
+      </if>
+      <if test="studentType != null">
+        student_type = #{studentType,jdbcType=INTEGER},
+      </if>
+      <if test="minScore != null">
+        min_score = #{minScore,jdbcType=INTEGER},
+      </if>
+      <if test="scoreEnrolled != null">
+        score_enrolled = #{scoreEnrolled,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="batchNo != null">
+        batch_no = #{batchNo,jdbcType=TINYINT},
+      </if>
+      <if test="minScoreSeq != null">
+        min_score_seq = #{minScoreSeq,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentScore != null">
+        last_student_score = #{lastStudentScore,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentSeq != null">
+        last_student_seq = #{lastStudentSeq,jdbcType=INTEGER},
+      </if>
+      <if test="lastStudentSameSeq != null">
+        last_student_same_seq = #{lastStudentSameSeq,jdbcType=INTEGER},
+      </if>
+      <if test="maxEntrySeq != null">
+        max_entry_seq = #{maxEntrySeq,jdbcType=INTEGER},
+      </if>
+      <if test="areaCode != null">
+        area_code = #{areaCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.snal.beans.TSchoolEntryScore">
+    update t_school_entry_score
+    set school_id = #{schoolId,jdbcType=INTEGER},
+      enroll_year = #{enrollYear,jdbcType=INTEGER},
+      enroll_number = #{enrollNumber,jdbcType=INTEGER},
+      student_type = #{studentType,jdbcType=INTEGER},
+      min_score = #{minScore,jdbcType=INTEGER},
+      score_enrolled = #{scoreEnrolled,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      batch_no = #{batchNo,jdbcType=TINYINT},
+      min_score_seq = #{minScoreSeq,jdbcType=INTEGER},
+      last_student_score = #{lastStudentScore,jdbcType=INTEGER},
+      last_student_seq = #{lastStudentSeq,jdbcType=INTEGER},
+      last_student_same_seq = #{lastStudentSameSeq,jdbcType=INTEGER},
+      max_entry_seq = #{maxEntrySeq,jdbcType=INTEGER},
+      area_code = #{areaCode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
