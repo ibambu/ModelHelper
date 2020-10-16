@@ -1,27 +1,29 @@
-package com.snal.main;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.snal.handler.impl;
 
-import com.snal.beans.School;
 import com.snal.beans.TSchoolEntryScore;
+import com.snal.handler.ISchoolDataHandler;
 import com.snal.util.excel.BigExcelUtil;
 import com.snal.util.text.TextUtil;
-import com.snal.util.word.WoldUtil;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class SchoolMain {
+/**
+ *
+ * @author luotao
+ */
+public class SchoolDataHandler implements ISchoolDataHandler {
 
     private static Map<String, String> areaMap = new HashMap<>();
     private static SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -38,150 +40,29 @@ public class SchoolMain {
         "440114",
         "440111"};
 
-    public static void main(String[] args) throws IOException {
-        /**
-         * 初始化地区
-         */
-//        initAreaCode();
-//        String dataFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/2020年广州市普通高中学校录取分数.xlsx";
-//        BigExcelUtil bigExlUtil = new BigExcelUtil();
-//        int[] minColumns = {24, 12};//列
-//        Map<String, List<List<String>>> metadata = bigExlUtil.readExcelData(dataFile, 0, 1, minColumns);
-//        List<List<String>> sheetData1 = metadata.get("0");//第一个工作表格
-//        List<List<String>> sheetData2 = metadata.get("1");//第二个工作表格
-//        importPubEntryScore(sheetData1);
-//        importPrivateEntryScore(sheetData2);
-
-//        String dataFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/2020年广州普通高中学校大全.xlsx";
-//        importSchool(dataFile);
-//        String dataFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/2020年广州市普通高中学校录取分数.xlsx";
-//        importPubEntryScore(dataFile);
-//        String descDir = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/学校介绍";
-//        String sql = createSchoolDescSql(descDir);
-//        System.out.print(sql);
-        subListTest();
-    }
-    
-    static class Score{
-        private Integer score;
-        private String name;
-
-        public Integer getScore() {
-            return score;
-        }
-
-        public void setScore(Integer score) {
-            this.score = score;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Score(Integer score, String name) {
-            this.score = score;
-            this.name = name;
-        }
-        
-        
-        
-    }
-
-    private static void subListTest() {
-        List<Score> aa = new ArrayList();
-        aa.add(new Score(5,"E"));
-        aa.add(new Score(2,"B"));
-        aa.add(new Score(4,"D"));
-        aa.add(new Score(3,"C"));
-        aa.add(new Score(1,"A"));
-
-        aa = aa.stream().sorted(Comparator.comparingInt(p->p.getScore())).collect(Collectors.toList());
-
-        aa.stream().forEach(p->{
-            System.out.println(p.getName() +"  "+p.getScore());
-        });
-
-    }
-
-    public static void saveToFile(String destUrl) {
-        FileOutputStream fos = null;
-        BufferedInputStream bis = null;
-        HttpURLConnection httpUrl = null;
-        URL url = null;
-        int BUFFER_SIZE = 1024;
-        byte[] buf = new byte[BUFFER_SIZE];
-        int size = 0;
+    @Override
+    public void loadSchoolEntryScore() {
         try {
-            url = new URL(destUrl);
-            httpUrl = (HttpURLConnection) url.openConnection();
-            httpUrl.connect();
-            bis = new BufferedInputStream(httpUrl.getInputStream());
-            fos = new FileOutputStream("/home/luotao/test/aa.jpg");
-            while ((size = bis.read(buf)) != -1) {
-                fos.write(buf, 0, size);
-            }
-            fos.flush();
-        } catch (IOException e) {
-        } catch (ClassCastException e) {
-        } finally {
-            try {
-                fos.close();
-                bis.close();
-                httpUrl.disconnect();
-            } catch (IOException e) {
-            } catch (NullPointerException e) {
-            }
+            /*
+            * 初始化地区
+             */
+            initAreaCode();
+            String dataFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/2020年广州市普通高中学校录取分数.xlsx";
+            BigExcelUtil bigExlUtil = new BigExcelUtil();
+            int[] minColumns = {24, 12};//列
+            Map<String, List<List<String>>> metadata = bigExlUtil.readExcelData(dataFile, 0, 1, minColumns);
+            List<List<String>> sheetData1 = metadata.get("0");//第一个工作表格
+            List<List<String>> sheetData2 = metadata.get("1");//第二个工作表格
+            importPubEntryScore(sheetData1);
+            importPrivateEntryScore(sheetData2);
+        } catch (IOException ex) {
+            Logger.getLogger(SchoolDataHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static void importPrivateEntryScore(List<List<String>> sheetData) throws IOException {
+    @Override
+    public void loadSchool() {
 
-        StringBuilder sqlBuffer = new StringBuilder();
-        sheetData.remove(0);
-        List<TSchoolEntryScore> tSchoolEntryScoreList = readTSchoolEntryScore(sheetData);
-        tSchoolEntryScoreList.stream().forEach(p -> {
-            String sql = makeInsertSql(p);
-            sqlBuffer.append(sql);
-        });
-        String sqlFileName = "private_school_score_" + System.currentTimeMillis() + ".sql";
-        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/" + sqlFileName;
-        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
-
-    }
-
-    private static void importPubEntryScore(List<List<String>> sheetData) throws IOException {
-        sheetData.remove(0);
-        sheetData.remove(0);
-        StringBuilder sqlBuffer = new StringBuilder();
-
-        List<TSchoolEntryScore> tSchoolEntryScoreList = readPubTSchoolEntryScore(sheetData);
-        tSchoolEntryScoreList.stream().forEach(p -> {
-            String sql = makeInsertSql(p);
-            sqlBuffer.append(sql);
-        });
-        String sqlFileName = "public_school_score_" + System.currentTimeMillis() + ".sql";
-        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/" + sqlFileName;
-        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
-
-    }
-
-    private static void importSchool(String dataFile) throws IOException {
-        BigExcelUtil bigExlUtil = new BigExcelUtil();
-        int[] minColumns = {13};//13 列
-        Map<String, List<List<String>>> metadata = bigExlUtil.readExcelData(dataFile, 0, 0, minColumns);
-        List<List<String>> sheetData = metadata.get("0");//第一个工作表格
-
-        List<School> schoolList = readSchool(sheetData);
-        StringBuilder sqlBuffer = new StringBuilder();
-        schoolList.stream().forEach(p -> {
-            sqlBuffer.append(makeSchoolInsertSql(p));
-        });
-        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/test_school1.sql";
-        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
     }
 
     private static void initAreaCode() {
@@ -203,55 +84,35 @@ public class SchoolMain {
         areaMap.put("博罗县", "441322");
     }
 
-    /**
-     * 读取学校
-     */
-    private static List<School> readSchool(List<List<String>> sheetData) {
-        List<School> schoolList = new ArrayList<>();
+    private void importPrivateEntryScore(List<List<String>> sheetData) throws IOException {
+
+        StringBuilder sqlBuffer = new StringBuilder();
         sheetData.remove(0);
-        sheetData.stream().forEach(rowData -> {
-            School school = createSchool(rowData);
-            schoolList.add(school);
+        List<TSchoolEntryScore> tSchoolEntryScoreList = readTSchoolEntryScore(sheetData);
+        tSchoolEntryScoreList.stream().forEach(p -> {
+            String sql = makeInsertSql(p);
+            sqlBuffer.append(sql);
         });
-        System.out.println("总记录数目：" + schoolList.size());
-        return schoolList;
+        String sqlFileName = "private_school_score_" + System.currentTimeMillis() + ".sql";
+        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/" + sqlFileName;
+        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
+
     }
 
-    private static School createSchool(List<String> rowData) {
-        School school = new School();
-        school.setSchoolId(Integer.parseInt(rowData.get(0)));//学校ID
-        school.setSchoolName(rowData.get(1));//学校名称
-        school.setSchoolType(Integer.parseInt(rowData.get(2)));//学校性质
-        school.setBatchNo(rowData.get(4));
-        if (rowData.get(6) != null && rowData.get(6).trim().length() > 0) {
-            school.setSchoolLevel(Integer.parseInt(rowData.get(6)));
-        }
-        school.setHeadmaster(rowData.get(8));
-        String locationCode = areaMap.get(rowData.get(9));
-        school.setLocationCode(locationCode);//所属区域
-        school.setAddress(rowData.get(10));//详细地址
+    private void importPubEntryScore(List<List<String>> sheetData) throws IOException {
+        sheetData.remove(0);
+        sheetData.remove(0);
+        StringBuilder sqlBuffer = new StringBuilder();
 
-        school.setOfficalWebsite(rowData.get(11));//官网
-        school.setTelephone(rowData.get(12));//联系电话
+        List<TSchoolEntryScore> tSchoolEntryScoreList = readPubTSchoolEntryScore(sheetData);
+        tSchoolEntryScoreList.stream().forEach(p -> {
+            String sql = makeInsertSql(p);
+            sqlBuffer.append(sql);
+        });
+        String sqlFileName = "pub_school_score_" + System.currentTimeMillis() + ".sql";
+        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/" + sqlFileName;
+        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
 
-        return school;
-    }
-
-    private static String makeSchoolInsertSql(School school) {
-        StringBuilder sqlbuffer = new StringBuilder();
-        sqlbuffer.append("insert into t_school(id,name,batch_no,school_type,school_level,headmaster,address,telephone,official_website,location_code) values (");
-        sqlbuffer.append(school.getSchoolId()).append(",")
-                .append("'").append((school.getSchoolName())).append("',")
-                .append("'").append(school.getBatchNo()).append("',")
-                .append(school.getSchoolType()).append(",")
-                .append(school.getSchoolLevel()).append(",")
-                .append("'").append(school.getHeadmaster()).append("',")
-                .append("'").append(school.getAddress()).append("',")
-                .append("'").append(school.getTelephone()).append("',")
-                .append("'").append(school.getOfficalWebsite()).append("',")
-                .append("'").append(school.getLocationCode()).append("'")
-                .append(");\n");
-        return sqlbuffer.toString();
     }
 
     /**
@@ -307,7 +168,7 @@ public class SchoolMain {
 
     private static List<TSchoolEntryScore> createPubSchoolEntryScore(List<String> rowData) {
         List<TSchoolEntryScore> resultList = new ArrayList<>();
-        String areaName = rowData.get(7);
+        String areaName = rowData.get(6);
 
         String outAreaMinScore = rowData.get(18);
         boolean isLimitOutArea = outAreaMinScore != null && outAreaMinScore.trim().length() > 0;
@@ -333,9 +194,6 @@ public class SchoolMain {
                 resultList.addAll(createPubEntryScore(areaCode3, rowData));
             } else {
                 String areaCode = areaMap.get(areaName);
-                if(areaName.equals("全市")){
-                    System.out.println("全市"+  rowData.get(4));
-                }
                 resultList.addAll(createPubEntryScore(areaCode, rowData));
             }
         }
@@ -481,22 +339,5 @@ public class SchoolMain {
                 .append("'").append(tSchoolEntryScore.getAreaCode()).append("'").append(");\n");
         return sqlBuffer.toString();
 
-    }
-
-    private static String createSchoolDescSql(String filePath) {
-        File rootFile = new File(filePath);
-        StringBuilder sqlbuffer = new StringBuilder();
-        if (rootFile.exists()) {
-            File[] docFiles = rootFile.listFiles();
-            for (File file : docFiles) {
-                String file1 = file.getAbsolutePath();
-                String text = WoldUtil.readWord(file1);
-                System.out.println(file.getName());
-                int schoolId = Integer.parseInt(file.getName().replaceAll(".doc", ""));
-                String sql = "update t_school set school_intro ='" + text + "' where id=" + schoolId + ";";
-                sqlbuffer.append(sql).append("\n");
-            }
-        }
-        return sqlbuffer.toString();
     }
 }

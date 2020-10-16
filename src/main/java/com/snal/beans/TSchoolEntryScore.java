@@ -79,6 +79,18 @@ public class TSchoolEntryScore implements Serializable {
      * 计划招生区域，对应political_location.location_code区县级编码。
      */
     private String areaCode;
+    
+    private String schoolLocationCode;
+
+    public String getSchoolLocationCode() {
+        return schoolLocationCode;
+    }
+
+    public void setSchoolLocationCode(String schoolLocationCode) {
+        this.schoolLocationCode = schoolLocationCode;
+    }
+    
+    
 
     private static final long serialVersionUID = 1L;
 
