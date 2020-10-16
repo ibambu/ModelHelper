@@ -2,6 +2,8 @@ package com.snal.main;
 
 import com.snal.beans.School;
 import com.snal.beans.TSchoolEntryScore;
+import com.snal.handler.ISchoolDataHandler;
+import com.snal.handler.impl.SchoolDataHandler;
 import com.snal.util.excel.BigExcelUtil;
 import com.snal.util.text.TextUtil;
 import com.snal.util.word.WoldUtil;
@@ -59,7 +61,9 @@ public class SchoolMain {
 //        String descDir = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/学校介绍";
 //        String sql = createSchoolDescSql(descDir);
 //        System.out.print(sql);
-        subListTest();
+
+        ISchoolDataHandler handler = new SchoolDataHandler();
+        handler.loadSchoolEnrollPaln();
     }
     
     static class Score{

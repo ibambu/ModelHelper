@@ -14,5 +14,7 @@ public interface ISchoolDataHandler {
     void loadSchoolEntryScore();
 
     void loadSchool();
+    
+    void loadSchoolEnrollPaln();
 
 }

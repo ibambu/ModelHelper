@@ -5,6 +5,7 @@
  */
 package com.snal.handler.impl;
 
+import com.snal.beans.TSchoolEnrollPlan;
 import com.snal.beans.TSchoolEntryScore;
 import com.snal.handler.ISchoolDataHandler;
 import com.snal.util.excel.BigExcelUtil;
@@ -141,6 +142,16 @@ public class SchoolDataHandler implements ISchoolDataHandler {
         return tSchoolEntryScoreList;
     }
 
+    private static List<TSchoolEnrollPlan> readSchoolEnrollPlan(List<List<String>> sheetData) {
+        List<TSchoolEnrollPlan> tSchoolEntryScoreList = new ArrayList<>();
+        sheetData.stream().forEach(rowData -> {
+            List<TSchoolEnrollPlan> tSchoolEntryScores = createSchoolEntryPlan(rowData);
+            tSchoolEntryScoreList.addAll(tSchoolEntryScores);
+        });
+        System.out.println("总记录数目：" + tSchoolEntryScoreList.size());
+        return tSchoolEntryScoreList;
+    }
+
     /**
      * 民办学校录取分数线
      *
@@ -198,6 +209,23 @@ public class SchoolDataHandler implements ISchoolDataHandler {
             }
         }
 
+        return resultList;
+    }
+
+    private static List<TSchoolEnrollPlan> createSchoolEntryPlan(List<String> rowData) {
+        List<TSchoolEnrollPlan> resultList = new ArrayList<>();
+
+        TSchoolEnrollPlan tSchoolEnrollPlan = new TSchoolEnrollPlan();
+        tSchoolEnrollPlan.setSchoolId(Integer.parseInt(rowData.get(0)));//学校ID
+        tSchoolEnrollPlan.setYear(Integer.parseInt(rowData.get(2)));//年份
+        tSchoolEnrollPlan.setEnrollType(Integer.parseInt(rowData.get(3)));//录取类别
+        tSchoolEnrollPlan.setPlanLocationNames(rowData.get(5));//招生区域
+        tSchoolEnrollPlan.setBatchName(rowData.get(6));//招生批次
+        tSchoolEnrollPlan.setEnrollNumber(Integer.parseInt(rowData.get(7)));//招生人数
+        tSchoolEnrollPlan.setAccommodationNumber(Integer.parseInt(rowData.get(8)));//宿位个数
+        tSchoolEnrollPlan.setAccommodationNumberDesc(rowData.get(9));//宿位个数描述
+
+        resultList.add(tSchoolEnrollPlan);
         return resultList;
     }
 
@@ -339,5 +367,59 @@ public class SchoolDataHandler implements ISchoolDataHandler {
                 .append("'").append(tSchoolEntryScore.getAreaCode()).append("'").append(");\n");
         return sqlBuffer.toString();
 
+    }
+    
+    
+
+    @Override
+    public void loadSchoolEnrollPaln() {
+        try {
+            /*
+            * 初始化地区
+             */
+            initAreaCode();
+            String dataFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/广州市学校招生计划.xlsx";
+            BigExcelUtil bigExlUtil = new BigExcelUtil();
+            int[] minColumns = {10, 0};//列
+            Map<String, List<List<String>>> metadata = bigExlUtil.readExcelData(dataFile, 0, 0, minColumns);
+            List<List<String>> sheetData1 = metadata.get("0");//第一个工作表格
+            importSchoolEnrollPaln(sheetData1);
+        } catch (IOException ex) {
+            Logger.getLogger(SchoolDataHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void importSchoolEnrollPaln(List<List<String>> sheetData) throws IOException {
+        sheetData.remove(0);
+        StringBuilder sqlBuffer = new StringBuilder();
+
+        List<TSchoolEnrollPlan> tSchoolEntryScoreList = readSchoolEnrollPlan(sheetData);
+        tSchoolEntryScoreList.stream().forEach(p -> {
+            String sql = makeInsertEnrollPlanSql(p);
+            sqlBuffer.append(sql);
+        });
+        String sqlFileName = "pub_school_enroll_plan_" + System.currentTimeMillis() + ".sql";
+        String sqlFile = "/home/luotao/lcwork/lcsvn/中考志愿推荐/志愿填报/02需求管理/" + sqlFileName;
+        TextUtil.writeToFile(sqlBuffer.toString(), sqlFile);
+    }
+    
+    private String makeInsertEnrollPlanSql(TSchoolEnrollPlan tSchoolEnrollPlan){
+          if (tSchoolEnrollPlan == null) {
+            return "";
+        }
+        StringBuilder sqlBuffer = new StringBuilder();
+        String s1 = "insert into t_school_enroll_plan (school_id, year, enroll_type, "
+                + "enroll_number, accommodation_number, plan_location_names, accommodation_number_desc,"
+                + "batch_name) values (";
+        sqlBuffer.append(s1);
+        sqlBuffer.append(tSchoolEnrollPlan.getSchoolId()).append(",")
+                .append(tSchoolEnrollPlan.getYear()).append(",")
+                .append(tSchoolEnrollPlan.getEnrollType()).append(",")
+                .append(tSchoolEnrollPlan.getEnrollNumber()).append(",")
+                .append(tSchoolEnrollPlan.getAccommodationNumber()).append(",")
+                .append("'").append(tSchoolEnrollPlan.getPlanLocationNames()).append("',")
+                .append("'").append(tSchoolEnrollPlan.getAccommodationNumberDesc()).append("',")
+                .append("'").append(tSchoolEnrollPlan.getBatchName()).append("');\n");
+        return sqlBuffer.toString();
     }
 }
